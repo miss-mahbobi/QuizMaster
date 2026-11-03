@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuizMaster | Quiz Session</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = { darkMode: 'class' };
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .glass { background: rgba(30,41,59,.72); border: 1px solid rgba(148,163,184,.14); backdrop-filter: blur(16px); }
+    .light body { background: #f1f5f9; color: #0f172a; }
+    .light .glass { background: rgba(255,255,255,.9); border-color: #e2e8f0; }
+    .light .muted { color: #64748b; }
+    .option.selected { border-color: #818cf8; background: rgba(99,102,241,.17); }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100">
+  <div class="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950/40 to-slate-950 px-4 py-6 sm:px-6">
+    <header class="mx-auto flex max-w-5xl items-center justify-between gap-3">
+      <a href="index.html" class="text-xl font-extrabold tracking-tight">Quiz<span class="text-indigo-400">Master</span></a>
+      <div class="flex items-center gap-2">
+        <button id="themeBtn" class="rounded-xl border border-slate-700 px-3 py-2 text-sm hover:bg-slate-800">☼ Theme</button>
+        <a href="index.html" class="rounded-xl border border-slate-700 px-3 py-2 text-sm hover:bg-slate-800">Dashboard</a>
+      </div>
+    </header>
+
+    <main class="mx-auto mt-8 max-w-4xl">
+      <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-widest text-indigo-400">Quiz session</p>
+          <h1 id="categoryTitle" class="mt-2 text-2xl font-extrabold sm:text-3xl">Loading Quiz...</h1>
+          <p class="muted mt-2 text-sm text-slate-400">Choose the best answer for each question.</p>
+        </div>
+        <div class="glass rounded-2xl px-5 py-3 text-center">
+          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Time remaining</p>
+          <p id="timer" class="mt-1 text-2xl font-extrabold tabular-nums text-indigo-400">10:00</p>
+        </div>
+      </div>
+
+      <div class="glass rounded-3xl p-5 shadow-2xl shadow-indigo-950/20 sm:p-8">
+        <div class="mb-7">
+          <div class="mb-3 flex items-center justify-between text-sm">
+            <span id="questionCount" class="font-semibold text-slate-300">Question 1 of 5</span>
+            <span id="progressText" class="text-slate-400">20% completed</span>
+          </div>
+          <div class="h-2 overflow-hidden rounded-full bg-slate-700">
+            <div id="progressBar" class="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 transition-all" style="width:20%"></div>
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <span class="rounded-full bg-indigo-500/15 px-3 py-1 text-xs font-bold text-indigo-300">QUESTION</span>
+          <h2 id="questionText" class="mt-5 text-xl font-bold leading-relaxed sm:text-2xl">Loading question...</h2>
+        </div>
+
+        <div id="options" class="grid gap-3"></div>
+
+        <div class="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-slate-700/70 pt-6">
+          <button id="prevBtn" class="rounded-xl border border-slate-600 px-5 py-3 text-sm font-semibold hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-40">← Previous</button>
+          <div class="flex gap-3">
+            <button id="nextBtn" class="rounded-xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white hover:bg-indigo-500">Next →</button>
+            <button id="submitBtn" class="hidden rounded-xl bg-emerald-600 px-5 py-3 text-sm font-bold text-white hover:bg-emerald-500">Submit Quiz</button>
+          </div>
+        </div>
+      </div>
+
+      <p class="muted mt-5 text-center text-xs text-slate-500">Your answers are saved when you submit the quiz.</p>
+    </main>
+  </div>
+
+  <script>
+    const questionBanks = {
+      "HTML": [
+        { q: "What does HTML stand for?", options: ["Hyper Text Markup Language", "High Text Machine Language", "Hyperlinks Text Mark Language", "Home Tool Markup Language"], answer: 0 },
+        { q: "Which tag is used to create a paragraph?", options: ["<h1>", "<p>", "<div>", "<br>"], answer: 1 },
+        { q: "Which tag creates a hyperlink?", options: ["<link>", "<a>", "<href>", "<url>"], answer: 1 },
+        { q: "Which attribute provides alternative text for an image?", options: ["title", "src", "alt", "name"], answer: 2 },
+        { q: "Which tag is used for the largest heading?", options: ["<h6>", "<head>", "<heading>", "<h1>"], answer: 3 }
+      ],
+      "CSS": [
+        { q: "What does CSS stand for?", options: ["Creative Style System", "Cascading Style Sheets", "Computer Style Sheets", "Colorful Style Syntax"], answer: 1 },
+        { q: "Which property changes text color?", options: ["font-color", "text-style", "color", "background"], answer: 2 },
+        { q: "Which symbol selects an element by its ID?", options: [".", "#", "*", "&"], answer: 1 },
+        { q: "Which property adds space inside an element?", options: ["margin", "padding", "border", "gap"], answer: 1 },
+        { q: "Which CSS layout system is one-dimensional?", options: ["Flexbox", "Grid", "Float", "Position"], answer: 0 }
+      ],
+      "JavaScript": [
+        { q: "Which keyword declares a block-scoped variable?", options: ["var only", "let", "define", "int"], answer: 1 },
+        { q: "Which method writes a message to the console?", options: ["print()", "write()", "console.log()", "show()"], answer: 2 },
+        { q: "Which operator checks strict equality?", options: ["=", "==", "===", "!="], answer: 2 },
+        { q: "Which method adds an item to the end of an array?", options: ["push()", "pop()", "shift()", "join()"], answer: 0 },
+        { q: "Which event happens when a user clicks an element?", options: ["change", "hover", "submit", "click"], answer: 3 }
+      ],
+      "Python": [
+        { q: "Which function displays output in Python?", options: ["echo()", "print()", "display()", "write()"], answer: 1 },
+        { q: "Which symbol starts a comment in Python?", options: ["//", "<!--", "#", "/*"], answer: 2 },
+        { q: "Which data type stores True or False?", options: ["String", "Boolean", "List", "Float"], answer: 1 },
+        { q: "Which keyword is used to define a function?", options: ["function", "func", "define", "def"], answer: 3 },
+        { q: "Which brackets are used to create a list?", options: ["[ ]", "{ }", "( )", "< >"], answer: 0 }
+      ],
+      "Database": [
+        { q: "What does SQL stand for?", options: ["Simple Query Language", "Structured Query Language", "System Question Language", "Standard Quick Language"], answer: 1 },
+        { q: "Which command retrieves data from a table?", options: ["GET", "OPEN", "SELECT", "SHOW ALL"], answer: 2 },
+        { q: "What is a primary key?", options: ["A unique identifier for a record", "A duplicate value", "A table name", "A password"], answer: 0 },
+        { q: "Which command adds new records?", options: ["UPDATE", "INSERT", "DELETE", "DROP"], answer: 1 },
+        { q: "What is a database?", options: ["A programming language", "A web browser", "A collection of organized data", "An operating system"], answer: 2 }
+      ],
+      "General Knowledge": [
+        { q: "Which planet is known as the Red Planet?", options: ["Venus", "Mars", "Jupiter", "Mercury"], answer: 1 },
+        { q: "How many days are there in a leap year?", options: ["364", "365", "366", "367"], answer: 2 },
+        { q: "What is the capital of Japan?", options: ["Seoul", "Beijing", "Bangkok", "Tokyo"], answer: 3 },
+        { q: "Which is the largest ocean on Earth?", options: ["Pacific Ocean", "Atlantic Ocean", "Indian Ocean", "Arctic Ocean"], answer: 0 },
+        { q: "How many continents are there?", options: ["Five", "Six", "Seven", "Eight"], answer: 2 }
+      ]
+    };
+
+    const params = new URLSearchParams(window.location.search);
+    let activeCategory = params.get("category") || "General Knowledge";
+    if (!questionBanks[activeCategory]) activeCategory = "General Knowledge";
+
+    const activeQuestions = questionBanks[activeCategory];
+    let currentQuestion = 0;
+    let answers = new Array(activeQuestions.length).fill(null);
+    let remainingSeconds = 600;
+    let submitted = false;
+    let timerInterval;
+
+    const $ = id => document.getElementById(id);
+
+    function applyTheme() {
+      const theme = localStorage.getItem("quizTheme") || "dark";
+      document.documentElement.classList.toggle("dark", theme === "dark");
+      document.documentElement.classList.toggle("light", theme === "light");
+      document.body.classList.toggle("bg-slate-950", theme === "dark");
+      document.body.classList.toggle("text-slate-100", theme === "dark");
+      document.body.classList.toggle("bg-slate-100", theme === "light");
+      document.body.classList.toggle("text-slate-900", theme === "light");
+    }
+
+    $("themeBtn").addEventListener("click", () => {
+      const next = (localStorage.getItem("quizTheme") || "dark") === "dark" ? "light" : "dark";
+      localStorage.setItem("quizTheme", next);
+      applyTheme();
+    });
+
+    function renderQuestion() {
+      const item = activeQuestions[currentQuestion];
+      $("categoryTitle").textContent = activeCategory + " Quiz";
+      $("questionCount").textContent = `Question ${currentQuestion + 1} of ${activeQuestions.length}`;
+      $("progressText").textContent = `${Math.round(((currentQuestion + 1) / activeQuestions.length) * 100)}% completed`;
+      $("progressBar").style.width = `${((currentQuestion + 1) / activeQuestions.length) * 100}%`;
+      $("questionText").textContent = item.q;
+      $("options").innerHTML = "";
+
+      item.options.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "option flex w-full items-center gap-4 rounded-2xl border border-slate-700 bg-slate-800/60 p-4 text-left text-sm font-medium transition hover:border-indigo-400 hover:bg-indigo-500/10 sm:text-base";
+        if (answers[currentQuestion] === index) button.classList.add("selected");
+
+        const letter = document.createElement("span");
+        letter.className = "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-700 font-bold text-indigo-300";
+        letter.textContent = String.fromCharCode(65 + index);
+
+        const text = document.createElement("span");
+        text.textContent = option;
+
+        button.append(letter, text);
+        button.addEventListener("click", () => {
+          answers[currentQuestion] = index;
+          renderQuestion();
+        });
+        $("options").appendChild(button);
+      });
+
+      $("prevBtn").disabled = currentQuestion === 0;
+      $("nextBtn").classList.toggle("hidden", currentQuestion === activeQuestions.length - 1);
+      $("submitBtn").classList.toggle("hidden", currentQuestion !== activeQuestions.length - 1);
+    }
+
+    function updateTimer() {
+      const minutes = Math.floor(remainingSeconds / 60);
+      const seconds = remainingSeconds % 60;
+      $("timer").textContent = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+      if (remainingSeconds <= 60) $("timer").classList.add("text-red-400");
+      if (remainingSeconds <= 0) {
+        clearInterval(timerInterval);
+        submitQuiz(true);
+        return;
+      }
+      remainingSeconds--;
+    }
+
+    function submitQuiz(auto = false) {
+      if (submitted) return;
+      const unanswered = answers.filter(answer => answer === null).length;
+      if (!auto && unanswered > 0) {
+        const proceed = confirm(`You have ${unanswered} unanswered question(s). Submit anyway?`);
+        if (!proceed) return;
+      } else if (!auto && !confirm("Are you sure you want to submit your quiz?")) {
+        return;
+      }
+
+      submitted = true;
+      clearInterval(timerInterval);
+
+      const score = activeQuestions.reduce((total, question, index) => {
+        return total + (answers[index] === question.answer ? 1 : 0);
+      }, 0);
+
+      const result = {
+        category: activeCategory,
+        score: score,
+        total: activeQuestions.length,
+        percentage: Math.round((score / activeQuestions.length) * 100),
+        date: new Date().toLocaleString()
+      };
+
+      let history = [];
+      try {
+        history = JSON.parse(localStorage.getItem("quizHistory") || "[]");
+        if (!Array.isArray(history)) history = [];
+      } catch (error) {
+        history = [];
+      }
+
+      history.unshift(result);
+      localStorage.setItem("quizHistory", JSON.stringify(history));
+      localStorage.setItem("latestQuizResult", JSON.stringify(result));
+      window.location.href = "results.html";
+    }
+
+    $("prevBtn").addEventListener("click", () => {
+      if (currentQuestion > 0) {
+        currentQuestion--;
+        renderQuestion();
+      }
+    });
+
+    $("nextBtn").addEventListener("click", () => {
+      if (currentQuestion < activeQuestions.length - 1) {
+        currentQuestion++;
+        renderQuestion();
+      }
+    });
+
+    $("submitBtn").addEventListener("click", () => submitQuiz(false));
+
+    applyTheme();
+    renderQuestion();
+    updateTimer();
+    timerInterval = setInterval(updateTimer, 1000);
+  </script>
+</body>
+</html>

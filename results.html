@@ -1,0 +1,181 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuizMaster | Results</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+*{font-family:Inter,sans-serif}
+body{background:#080d1b;color:#f8fafc}
+.glass{background:rgba(20,29,52,.88);border:1px solid rgba(148,163,184,.13);backdrop-filter:blur(18px)}
+.gradient{background:linear-gradient(110deg,#6366f1,#8b5cf6,#a855f7)}
+.light{background:#f1f5f9;color:#172033}
+.light .glass{background:#fff;border-color:#e2e8f0}
+.light .muted{color:#64748b}
+.light .text-slate-400{color:#64748b!important}
+button,a{transition:.2s}
+</style>
+</head>
+
+<body class="min-h-screen">
+
+<header class="border-b border-slate-700/30 px-5 py-4">
+<div class="max-w-6xl mx-auto flex items-center justify-between">
+<a href="index.html" class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl gradient flex items-center justify-center font-bold text-xl">Q</div>
+<span class="text-xl font-extrabold">QuizMaster</span>
+</a>
+
+<button id="themeBtn" class="glass rounded-xl px-4 py-2 text-sm">☀️ Light</button>
+</div>
+</header>
+
+<main class="max-w-4xl mx-auto px-4 py-10">
+
+<div class="text-center mb-9">
+<p class="text-violet-400 text-sm font-bold tracking-widest">QUIZ COMPLETED</p>
+<h1 class="text-3xl sm:text-4xl font-extrabold mt-3">Your Results</h1>
+<p class="text-slate-400 muted mt-2">Here is your performance summary.</p>
+</div>
+
+<section id="resultSection" class="glass rounded-3xl p-6 sm:p-9">
+
+<div class="text-center">
+<div class="w-24 h-24 rounded-full gradient mx-auto flex items-center justify-center text-3xl font-extrabold" id="scoreCircle">
+0%
+</div>
+
+<h2 id="resultTitle" class="text-2xl font-bold mt-5">Quiz Completed!</h2>
+<p id="categoryName" class="text-slate-400 muted mt-2">Category</p>
+</div>
+
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-9">
+
+<div class="glass rounded-2xl p-5 text-center">
+<p class="text-sm text-slate-400 muted">Correct Answers</p>
+<p id="correctAnswers" class="text-2xl font-extrabold text-green-400 mt-2">0</p>
+</div>
+
+<div class="glass rounded-2xl p-5 text-center">
+<p class="text-sm text-slate-400 muted">Total Questions</p>
+<p id="totalQuestions" class="text-2xl font-extrabold mt-2">0</p>
+</div>
+
+<div class="glass rounded-2xl p-5 text-center col-span-2 sm:col-span-1">
+<p class="text-sm text-slate-400 muted">Your Percentage</p>
+<p id="percentage" class="text-2xl font-extrabold text-violet-400 mt-2">0%</p>
+</div>
+
+</div>
+
+<div class="mt-8">
+<div class="flex justify-between text-sm mb-3">
+<span class="text-slate-400 muted">Your Performance</span>
+<span id="progressText" class="font-bold">0%</span>
+</div>
+<div class="w-full h-3 bg-slate-700/50 rounded-full overflow-hidden">
+<div id="progressBar" class="gradient h-full rounded-full" style="width:0%"></div>
+</div>
+</div>
+
+<div class="glass rounded-2xl p-5 mt-7">
+<p class="text-sm text-slate-400 muted">Completion Date</p>
+<p id="resultDate" class="font-semibold mt-2">—</p>
+</div>
+
+<div class="grid sm:grid-cols-3 gap-3 mt-8">
+<button id="retryBtn" class="gradient rounded-xl py-3 font-bold">
+Try Again
+</button>
+
+<a href="history.html" class="glass rounded-xl py-3 font-semibold text-center">
+View History
+</a>
+
+<a href="index.html" class="glass rounded-xl py-3 font-semibold text-center">
+Dashboard
+</a>
+</div>
+
+</section>
+
+<section id="emptyState" class="hidden glass rounded-3xl p-8 text-center">
+<div class="text-5xl mb-5">📊</div>
+<h2 class="text-2xl font-bold">No Results Yet</h2>
+<p class="text-slate-400 muted mt-3">Complete a quiz to see your results here.</p>
+<a href="categories.html" class="gradient inline-block rounded-xl px-7 py-3 font-bold mt-7">
+Start a Quiz
+</a>
+</section>
+
+</main>
+
+<script>
+const themeBtn = document.getElementById('themeBtn');
+
+function applyTheme(){
+const theme = localStorage.getItem('quizTheme') || 'dark';
+document.body.classList.toggle('light',theme === 'light');
+themeBtn.textContent = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
+}
+
+themeBtn.addEventListener('click',()=>{
+const current = localStorage.getItem('quizTheme') || 'dark';
+localStorage.setItem('quizTheme',current === 'dark' ? 'light' : 'dark');
+applyTheme();
+});
+
+applyTheme();
+
+let result = null;
+
+try{
+result = JSON.parse(localStorage.getItem('latestQuizResult') || 'null');
+}catch(error){
+result = null;
+}
+
+const resultSection = document.getElementById('resultSection');
+const emptyState = document.getElementById('emptyState');
+
+if(!result || typeof result !== 'object'){
+resultSection.classList.add('hidden');
+emptyState.classList.remove('hidden');
+}else{
+
+const score = Number(result.score) || 0;
+const total = Number(result.total) || 0;
+const percentage = total > 0
+? Math.max(0,Math.min(100,Number(result.percentage) || Math.round(score / total * 100)))
+: 0;
+
+document.getElementById('scoreCircle').textContent = percentage + '%';
+document.getElementById('correctAnswers').textContent = score;
+document.getElementById('totalQuestions').textContent = total;
+document.getElementById('percentage').textContent = percentage + '%';
+document.getElementById('progressText').textContent = percentage + '%';
+document.getElementById('progressBar').style.width = percentage + '%';
+document.getElementById('categoryName').textContent = result.category || 'General Knowledge';
+document.getElementById('resultDate').textContent = result.date || 'Not available';
+
+let title = 'Keep Practicing!';
+if(percentage >= 90) title = 'Excellent Work!';
+else if(percentage >= 75) title = 'Great Job!';
+else if(percentage >= 50) title = 'Good Effort!';
+
+document.getElementById('resultTitle').textContent = title;
+
+document.getElementById('retryBtn').addEventListener('click',()=>{
+const category = encodeURIComponent(result.category || 'General Knowledge');
+window.location.href = 'quiz.html?category=' + category;
+});
+
+}
+</script>
+
+</body>
+</html>

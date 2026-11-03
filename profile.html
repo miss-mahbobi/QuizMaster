@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuizMaster | My Profile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>tailwind.config = { darkMode: 'class' };</script>
+  <style>
+    body{font-family:Inter,sans-serif}
+    .glass{background:rgba(30,41,59,.75);border:1px solid rgba(148,163,184,.14);backdrop-filter:blur(16px)}
+    .light body{background:#f1f5f9;color:#0f172a}
+    .light .glass{background:rgba(255,255,255,.94);border-color:#e2e8f0}
+    .light .muted{color:#64748b}
+    .light input,.light textarea{background:#f8fafc;color:#0f172a;border-color:#cbd5e1}
+  </style>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100">
+<div class="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950/40 to-slate-950 px-4 py-6 sm:px-6">
+  <header class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4">
+    <a href="index.html" class="text-xl font-extrabold">Quiz<span class="text-indigo-400">Master</span></a>
+    <div class="flex gap-2">
+      <button id="themeBtn" class="rounded-xl border border-slate-700 px-3 py-2 text-sm">☼ Theme</button>
+      <a href="index.html" class="rounded-xl border border-slate-700 px-4 py-2 text-sm">Dashboard</a>
+    </div>
+  </header>
+
+  <main class="mx-auto mt-9 max-w-5xl">
+    <p class="text-sm font-bold uppercase tracking-widest text-indigo-400">Account settings</p>
+    <h1 class="mt-2 text-3xl font-extrabold sm:text-4xl">My Profile</h1>
+    <p class="muted mt-3 text-sm text-slate-400">Manage your personal information and view your learning progress.</p>
+
+    <section class="mt-8 grid gap-6 lg:grid-cols-3">
+      <div class="glass rounded-3xl p-6 text-center">
+        <div id="avatar" class="mx-auto flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-indigo-500 to-violet-600 text-4xl font-extrabold text-white shadow-xl shadow-indigo-900/30">Q</div>
+        <h2 id="displayName" class="mt-5 text-xl font-bold">Quiz User</h2>
+        <p id="displayEmail" class="muted mt-2 break-all text-sm text-slate-400">user@example.com</p>
+        <span class="mt-5 inline-block rounded-full bg-indigo-500/15 px-4 py-2 text-xs font-bold text-indigo-300">QuizMaster Member</span>
+        <button id="logoutBtn" class="mt-8 w-full rounded-xl border border-red-500/40 px-4 py-3 text-sm font-bold text-red-400 hover:bg-red-500/10">Log Out</button>
+      </div>
+
+      <div class="space-y-6 lg:col-span-2">
+        <div class="glass rounded-3xl p-6 sm:p-8">
+          <div class="mb-6">
+            <h2 class="text-xl font-bold">Personal Information</h2>
+            <p class="muted mt-1 text-sm text-slate-400">Update your profile details below.</p>
+          </div>
+
+          <form id="profileForm" class="space-y-5">
+            <div>
+              <label for="fullName" class="mb-2 block text-sm font-semibold text-slate-300">Full Name</label>
+              <input id="fullName" type="text" required maxlength="60" class="w-full rounded-xl border border-slate-700 bg-slate-800/70 px-4 py-3 outline-none focus:border-indigo-500">
+            </div>
+
+            <div>
+              <label for="email" class="mb-2 block text-sm font-semibold text-slate-300">Email Address</label>
+              <input id="email" type="email" readonly class="w-full cursor-not-allowed rounded-xl border border-slate-700 bg-slate-800/40 px-4 py-3 text-slate-400 outline-none">
+              <p class="muted mt-2 text-xs text-slate-500">Email address cannot be changed here.</p>
+            </div>
+
+            <div>
+              <label for="about" class="mb-2 block text-sm font-semibold text-slate-300">About Me</label>
+              <textarea id="about" rows="4" maxlength="300" placeholder="Write something about yourself..." class="w-full resize-y rounded-xl border border-slate-700 bg-slate-800/70 px-4 py-3 outline-none focus:border-indigo-500"></textarea>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3">
+              <button type="submit" class="rounded-xl bg-indigo-600 px-6 py-3 text-sm font-bold text-white hover:bg-indigo-500">Save Changes</button>
+              <span id="saveMessage" class="text-sm text-emerald-400"></span>
+            </div>
+          </form>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-3">
+          <div class="glass rounded-2xl p-5">
+            <p class="text-sm text-slate-400">Total Quizzes</p>
+            <h3 id="totalQuizzes" class="mt-3 text-2xl font-extrabold">0</h3>
+          </div>
+          <div class="glass rounded-2xl p-5">
+            <p class="text-sm text-slate-400">Average Score</p>
+            <h3 id="averageScore" class="mt-3 text-2xl font-extrabold">0%</h3>
+          </div>
+          <div class="glass rounded-2xl p-5">
+            <p class="text-sm text-slate-400">Best Score</p>
+            <h3 id="bestScore" class="mt-3 text-2xl font-extrabold">0%</h3>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+let user = {};
+
+function applyTheme(){
+  const theme = localStorage.getItem("quizTheme") || "dark";
+  document.documentElement.classList.toggle("dark",theme === "dark");
+  document.documentElement.classList.toggle("light",theme === "light");
+  document.body.classList.toggle("bg-slate-950",theme === "dark");
+  document.body.classList.toggle("text-slate-100",theme === "dark");
+  document.body.classList.toggle("bg-slate-100",theme === "light");
+  document.body.classList.toggle("text-slate-900",theme === "light");
+}
+
+$("themeBtn").addEventListener("click",()=>{
+  localStorage.setItem("quizTheme",(localStorage.getItem("quizTheme") || "dark") === "dark" ? "light" : "dark");
+  applyTheme();
+});
+
+function loadUser(){
+  try { user = JSON.parse(localStorage.getItem("quizUser") || "null"); }
+  catch(e) { user = null; }
+
+  if(!user || !user.email){
+    alert("Please log in to view your profile.");
+    window.location.href = "login.html";
+    return false;
+  }
+
+  user.name = user.name || "Quiz User";
+  user.about = user.about || "";
+
+  $("displayName").textContent = user.name;
+  $("displayEmail").textContent = user.email;
+  $("avatar").textContent = user.name.trim().charAt(0).toUpperCase() || "Q";
+  $("fullName").value = user.name;
+  $("email").value = user.email;
+  $("about").value = user.about;
+  return true;
+}
+
+function loadStats(){
+  let history = [];
+  try {
+    const data = JSON.parse(localStorage.getItem("quizHistory") || "[]");
+    history = Array.isArray(data) ? data : [];
+  } catch(e) { history = []; }
+
+  const scores = history.map(item=>{
+    if(typeof item.percentage === "number") return item.percentage;
+    const total = Number(item.total) || 0;
+    return total ? Math.round((Number(item.score)||0)/total*100) : 0;
+  });
+
+  $("totalQuizzes").textContent = history.length;
+  $("averageScore").textContent = scores.length
+    ? Math.round(scores.reduce((a,b)=>a+b,0)/scores.length) + "%"
+    : "0%";
+  $("bestScore").textContent = scores.length ? Math.max(...scores) + "%" : "0%";
+}
+
+$("profileForm").addEventListener("submit",event=>{
+  event.preventDefault();
+
+  const newName = $("fullName").value.trim();
+  const newAbout = $("about").value.trim();
+
+  if(newName.length < 2){
+    alert("Please enter a valid name.");
+    return;
+  }
+
+  user.name = newName;
+  user.about = newAbout;
+  localStorage.setItem("quizUser",JSON.stringify(user));
+
+  let users = [];
+  try {
+    const data = JSON.parse(localStorage.getItem("quizUsers") || "[]");
+    users = Array.isArray(data) ? data : [];
+  } catch(e) { users = []; }
+
+  const index = users.findIndex(item=>
+    String(item.email || "").toLowerCase() === String(user.email).toLowerCase()
+  );
+
+  if(index !== -1){
+    users[index].name = newName;
+    users[index].about = newAbout;
+    localStorage.setItem("quizUsers",JSON.stringify(users));
+  }
+
+  $("displayName").textContent = newName;
+  $("avatar").textContent = newName.charAt(0).toUpperCase();
+  $("saveMessage").textContent = "Profile updated successfully!";
+  setTimeout(()=>$("saveMessage").textContent="",3000);
+});
+
+$("logoutBtn").addEventListener("click",()=>{
+  if(!confirm("Are you sure you want to log out?")) return;
+  localStorage.removeItem("quizUser");
+  window.location.href = "login.html";
+});
+
+applyTheme();
+if(loadUser()) loadStats();
+</script>
+</body>
+</html>
