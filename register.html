@@ -1,0 +1,213 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuizMaster | Register</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{font-family:Inter,sans-serif}
+body{background:#080d1b;color:#f8fafc}
+.glass{background:rgba(20,29,52,.9);border:1px solid rgba(148,163,184,.15);backdrop-filter:blur(18px)}
+.gradient{background:linear-gradient(110deg,#6366f1,#8b5cf6,#a855f7)}
+.field{background:#0d1529;border:1px solid #27334e;color:#fff;outline:none}
+.field:focus{border-color:#8b5cf6;box-shadow:0 0 0 3px rgba(139,92,246,.13)}
+.light{background:#f1f5f9;color:#172033}
+.light .glass{background:white;border-color:#e2e8f0}
+.light .field{background:#f8fafc;color:#172033;border-color:#cbd5e1}
+.light .muted{color:#64748b}
+.light .text-slate-400{color:#64748b!important}
+</style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center px-4 py-8">
+
+<a href="index.html" class="fixed top-5 left-5 text-sm text-slate-400 hover:text-violet-400">← Home</a>
+
+<button id="themeBtn" class="fixed top-5 right-5 glass rounded-xl px-4 py-2 text-sm">☀️ Light</button>
+
+<main class="w-full max-w-5xl grid md:grid-cols-2 gap-8 items-center">
+
+<section class="hidden md:block px-5">
+<div class="flex items-center gap-3 mb-10">
+<div class="w-12 h-12 rounded-2xl gradient flex items-center justify-center text-2xl font-bold">Q</div>
+<span class="text-2xl font-extrabold">QuizMaster</span>
+</div>
+
+<p class="text-violet-400 text-sm font-semibold tracking-widest">JOIN OUR COMMUNITY</p>
+
+<h1 class="text-5xl font-extrabold leading-tight mt-4">
+Start Your<br>
+<span class="text-violet-400">Learning Journey.</span>
+</h1>
+
+<p class="text-slate-400 muted leading-7 mt-5 max-w-md">
+Create your account, explore new topics and test your knowledge with interactive quizzes.
+</p>
+
+<div class="glass rounded-2xl p-5 mt-10">
+<p class="text-violet-400 font-bold text-lg">Learn • Practice • Improve</p>
+<p class="text-slate-400 muted text-sm mt-2">Your progress starts with one step.</p>
+</div>
+</section>
+
+<section class="glass rounded-3xl p-6 sm:p-9 shadow-2xl">
+
+<div class="md:hidden flex items-center gap-3 mb-7">
+<div class="w-10 h-10 rounded-xl gradient flex items-center justify-center font-bold text-xl">Q</div>
+<span class="text-xl font-extrabold">QuizMaster</span>
+</div>
+
+<div class="mb-7">
+<p class="text-violet-400 text-sm font-semibold">CREATE ACCOUNT</p>
+<h2 class="text-3xl font-extrabold mt-2">Get Started</h2>
+<p class="text-slate-400 muted text-sm mt-2">Create your free QuizMaster account.</p>
+</div>
+
+<form id="registerForm" class="space-y-4">
+
+<div>
+<label class="block text-sm font-medium mb-2">Full Name</label>
+<input id="fullName" type="text" required maxlength="60"
+placeholder="Enter your full name"
+class="field w-full rounded-xl px-4 py-3 text-sm">
+</div>
+
+<div>
+<label class="block text-sm font-medium mb-2">Email Address</label>
+<input id="email" type="email" required maxlength="100"
+placeholder="name@example.com"
+class="field w-full rounded-xl px-4 py-3 text-sm">
+</div>
+
+<div>
+<label class="block text-sm font-medium mb-2">Password</label>
+<div class="relative">
+<input id="password" type="password" required minlength="6"
+placeholder="Minimum 6 characters"
+class="field w-full rounded-xl px-4 py-3 pr-16 text-sm">
+<button id="showPassword" type="button"
+class="absolute right-3 top-3 text-xs text-violet-400">Show</button>
+</div>
+</div>
+
+<div>
+<label class="block text-sm font-medium mb-2">Confirm Password</label>
+<input id="confirmPassword" type="password" required minlength="6"
+placeholder="Enter password again"
+class="field w-full rounded-xl px-4 py-3 text-sm">
+</div>
+
+<label class="flex items-start gap-3 text-sm text-slate-400 muted">
+<input id="terms" type="checkbox" required class="mt-1 accent-violet-500">
+<span>I agree to create an account and use QuizMaster for learning.</span>
+</label>
+
+<p id="message" class="hidden text-sm" role="status"></p>
+
+<button type="submit" class="gradient w-full rounded-xl py-3.5 font-bold hover:opacity-90">
+Create Account →
+</button>
+
+</form>
+
+<p class="text-center text-sm text-slate-400 muted mt-6">
+Already have an account?
+<a href="login.html" class="text-violet-400 font-semibold">Sign In</a>
+</p>
+
+</section>
+</main>
+
+<script>
+const themeBtn = document.getElementById('themeBtn');
+
+function applyTheme(){
+const theme = localStorage.getItem('quizTheme') || 'dark';
+document.body.classList.toggle('light',theme === 'light');
+themeBtn.textContent = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
+}
+
+themeBtn.addEventListener('click',()=>{
+const current = localStorage.getItem('quizTheme') || 'dark';
+localStorage.setItem('quizTheme',current === 'dark' ? 'light' : 'dark');
+applyTheme();
+});
+
+applyTheme();
+
+document.getElementById('showPassword').addEventListener('click',function(){
+const password = document.getElementById('password');
+const hidden = password.type === 'password';
+password.type = hidden ? 'text' : 'password';
+this.textContent = hidden ? 'Hide' : 'Show';
+});
+
+const form = document.getElementById('registerForm');
+const message = document.getElementById('message');
+
+function showMessage(text,success=false){
+message.textContent = text;
+message.classList.remove('hidden','text-red-400','text-green-400');
+message.classList.add(success ? 'text-green-400' : 'text-red-400');
+}
+
+form.addEventListener('submit',function(event){
+event.preventDefault();
+
+const name = document.getElementById('fullName').value.trim();
+const email = document.getElementById('email').value.trim().toLowerCase();
+const password = document.getElementById('password').value;
+const confirmPassword = document.getElementById('confirmPassword').value;
+
+if(name.length < 2){
+showMessage('Please enter your full name.');
+return;
+}
+
+if(password.length < 6){
+showMessage('Password must contain at least 6 characters.');
+return;
+}
+
+if(password !== confirmPassword){
+showMessage('Passwords do not match.');
+return;
+}
+
+let users = [];
+
+try{
+users = JSON.parse(localStorage.getItem('quizUsers') || '[]');
+if(!Array.isArray(users)) users = [];
+}catch(error){
+users = [];
+}
+
+const exists = users.some(user =>
+String(user.email || '').toLowerCase() === email
+);
+
+if(exists){
+showMessage('This email is already registered. Please sign in.');
+return;
+}
+
+users.push({
+name:name,
+email:email,
+password:password,
+about:''
+});
+
+localStorage.setItem('quizUsers',JSON.stringify(users));
+
+showMessage('Account created successfully! Go to Login.',true);
+form.reset();
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,521 @@
+
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuizMaster | Dashboard</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class' };
+  </script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; }
+
+    .glass {
+      background: rgba(255,255,255,.045);
+      border: 1px solid rgba(255,255,255,.09);
+      backdrop-filter: blur(18px);
+    }
+
+    .light .glass {
+      background: rgba(255,255,255,.9);
+      border: 1px solid #e7e9f2;
+      box-shadow: 0 8px 30px rgba(35,40,80,.04);
+    }
+
+    .light .main-bg { background: #f5f6fc; }
+    .light .side-bg { background: #fff; border-color: #e7e9f2; }
+    .light .primary-text { color: #182039; }
+    .light .muted-text { color: #7b8298; }
+
+    .nav-link {
+      display:flex;
+      align-items:center;
+      gap:13px;
+      padding:12px 14px;
+      border-radius:12px;
+      color:#929ab4;
+      transition:.2s;
+    }
+
+    .nav-link:hover {
+      background:rgba(255,255,255,.06);
+      color:white;
+    }
+
+    .light .nav-link:hover {
+      background:#f1efff;
+      color:#7654e8;
+    }
+
+    .active-link {
+      background:linear-gradient(100deg,rgba(124,91,240,.25),rgba(75,105,220,.12));
+      color:#b7a4ff;
+      border:1px solid rgba(145,115,255,.16);
+    }
+
+    .light .active-link {
+      background:#eeeaff;
+      color:#7654e8;
+    }
+
+    .welcome-card {
+      background:linear-gradient(115deg,#30216d,#253e88 65%,#23628d);
+    }
+
+    .light .welcome-card {
+      background:linear-gradient(115deg,#6845d9,#3976e8);
+    }
+
+    .progress-track {
+      height:7px;
+      border-radius:20px;
+      background:rgba(130,140,170,.18);
+      overflow:hidden;
+    }
+
+    .progress-fill {
+      height:100%;
+      border-radius:20px;
+      background:linear-gradient(90deg,#8b5cf6,#4d8bfa);
+    }
+
+    button,a { -webkit-tap-highlight-color:transparent; }
+  </style>
+</head>
+
+<body class="dark bg-[#090d1c] text-white min-h-screen">
+
+<div class="min-h-screen flex main-bg">
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar"
+    class="side-bg fixed md:sticky top-0 left-0 z-50 h-screen w-64 bg-[#0d1326] border-r border-white/5 p-5 flex flex-col -translate-x-full md:translate-x-0 transition-transform duration-300">
+
+    <div class="flex items-center gap-3 px-2 mb-10">
+      <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center text-2xl">
+        ✦
+      </div>
+      <div>
+        <h1 class="font-bold text-xl">Quiz<span class="text-violet-400">Master</span></h1>
+        <p class="text-[10px] tracking-[2px] text-slate-500 uppercase">Smart Examination</p>
+      </div>
+    </div>
+
+    <p class="text-[10px] font-bold tracking-[2px] text-slate-500 px-3 mb-3">MENU</p>
+
+    <nav class="space-y-2">
+      <a href="index.html" class="nav-link active-link">
+        <span>▦</span> Dashboard
+      </a>
+      <a href="categories.html" class="nav-link">
+        <span>◫</span> Categories
+      </a>
+      <a href="history.html" class="nav-link">
+        <span>◷</span> Quiz History
+      </a>
+      <a href="results.html" class="nav-link">
+        <span>▤</span> My Results
+      </a>
+    </nav>
+
+    <p class="text-[10px] font-bold tracking-[2px] text-slate-500 px-3 mt-9 mb-3">ACCOUNT</p>
+
+    <nav class="space-y-2">
+      <a href="profile.html" class="nav-link">
+        <span>◎</span> My Profile
+      </a>
+      <a href="admin.html" class="nav-link">
+        <span>⚙</span> Admin Panel
+      </a>
+    </nav>
+
+    <div class="mt-auto glass rounded-2xl p-4">
+      <div class="w-9 h-9 rounded-xl bg-violet-500/20 text-violet-300 flex items-center justify-center mb-3">✦</div>
+      <h3 class="font-semibold text-sm">Keep Learning!</h3>
+      <p class="text-xs text-slate-400 mt-2 leading-5">
+        Every quiz is a new opportunity to grow.
+      </p>
+      <a href="categories.html" class="block text-center bg-violet-600 hover:bg-violet-500 rounded-xl py-2.5 mt-4 text-xs font-bold">
+        Explore Quizzes
+      </a>
+    </div>
+
+    <div class="flex items-center gap-3 mt-5 px-2">
+      <div class="w-9 h-9 rounded-full bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center font-bold">U</div>
+      <div class="min-w-0">
+        <p id="sidebarName" class="text-sm font-semibold truncate">Student</p>
+        <p class="text-xs text-slate-500">Learner Account</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MOBILE OVERLAY -->
+  <div id="overlay" onclick="closeMenu()"
+    class="fixed inset-0 bg-black/60 z-40 hidden md:hidden"></div>
+
+  <!-- MAIN -->
+  <main class="main-bg min-w-0 flex-1 p-4 sm:p-6 lg:p-9">
+
+    <!-- HEADER -->
+    <header class="flex items-center justify-between gap-3 mb-8">
+      <div class="flex items-center gap-3">
+        <button onclick="openMenu()" class="md:hidden glass w-10 h-10 rounded-xl">☰</button>
+        <div>
+          <p class="muted-text text-xs mb-1">Pages / Overview</p>
+          <h2 class="primary-text text-2xl font-bold">Dashboard</h2>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button onclick="toggleTheme()" class="glass w-10 h-10 rounded-xl">
+          <span id="themeIcon">☀</span>
+        </button>
+        <a href="profile.html" class="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center font-bold">U</a>
+      </div>
+    </header>
+
+    <!-- WELCOME -->
+    <section class="welcome-card relative overflow-hidden rounded-3xl p-6 sm:p-9 mb-7">
+
+      <div class="absolute w-64 h-64 bg-violet-400/20 rounded-full blur-3xl -right-16 -top-20"></div>
+
+      <div class="relative z-10 max-w-xl">
+        <div class="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/10 px-3 py-1.5 text-xs text-violet-100 mb-5">
+          <span class="w-2 h-2 bg-emerald-400 rounded-full"></span>
+          YOUR LEARNING SPACE
+        </div>
+
+        <h2 class="text-3xl sm:text-4xl font-bold leading-tight">
+          Challenge Your<br>Knowledge!
+        </h2>
+
+        <p class="text-sm sm:text-base text-indigo-100/80 mt-4 leading-7 max-w-md">
+          Learn, practice and measure your knowledge. Your next achievement starts with one quiz.
+        </p>
+
+<a href="quiz.html"
+  class="inline-flex items-center gap-3 mt-7 bg-white text-indigo-800 font-bold text-sm rounded-xl px-5 py-3 hover:bg-indigo-50">
+  Start a Quiz <span>→</span>
+</a>
+      </div>
+
+      <div class="hidden lg:flex absolute right-14 top-1/2 -translate-y-1/2 w-48 h-48 rounded-full border border-white/15 items-center justify-center">
+        <div class="w-36 h-36 rounded-full border border-white/20 flex items-center justify-center">
+          <div class="w-24 h-24 rounded-3xl bg-white/10 flex items-center justify-center text-5xl">✦</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATISTICS -->
+    <section class="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-7">
+
+      <div class="glass rounded-2xl p-5">
+        <div class="flex justify-between items-center">
+          <span class="muted-text text-xs">Total Quizzes</span>
+          <span class="w-9 h-9 rounded-xl bg-violet-500/15 text-violet-400 flex items-center justify-center">▦</span>
+        </div>
+        <h3 id="totalQuizzes" class="primary-text text-3xl font-bold mt-4">0</h3>
+        <p class="muted-text text-xs mt-2">Completed quizzes</p>
+      </div>
+
+      <div class="glass rounded-2xl p-5">
+        <div class="flex justify-between items-center">
+          <span class="muted-text text-xs">Average Score</span>
+          <span class="w-9 h-9 rounded-xl bg-blue-500/15 text-blue-400 flex items-center justify-center">％</span>
+        </div>
+        <h3 id="averageScore" class="primary-text text-3xl font-bold mt-4">0%</h3>
+        <p class="muted-text text-xs mt-2">Across all attempts</p>
+      </div>
+
+      <div class="glass rounded-2xl p-5">
+        <div class="flex justify-between items-center">
+          <span class="muted-text text-xs">Best Score</span>
+          <span class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center">★</span>
+        </div>
+        <h3 id="bestScore" class="primary-text text-3xl font-bold mt-4">0%</h3>
+        <p class="muted-text text-xs mt-2">Your highest result</p>
+      </div>
+
+      <div class="glass rounded-2xl p-5">
+        <div class="flex justify-between items-center">
+          <span class="muted-text text-xs">Total Points</span>
+          <span class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center">✧</span>
+        </div>
+        <h3 id="totalPoints" class="primary-text text-3xl font-bold mt-4">0</h3>
+        <p class="muted-text text-xs mt-2">Points earned</p>
+      </div>
+
+    </section>
+
+    <!-- ANALYTICS -->
+    <section class="grid grid-cols-1 xl:grid-cols-3 gap-5 mb-7">
+
+      <div class="glass rounded-2xl p-5 sm:p-6 xl:col-span-2">
+        <div class="flex justify-between items-center mb-6">
+          <div>
+            <h3 class="primary-text font-bold text-lg">Performance Overview</h3>
+            <p class="muted-text text-xs mt-1">Your recent quiz scores</p>
+          </div>
+          <span class="text-xs text-violet-400 bg-violet-500/10 px-3 py-2 rounded-lg">Recent activity</span>
+        </div>
+
+        <div class="h-48 relative">
+          <div id="chartBars" class="absolute inset-0 flex items-end justify-around gap-3 px-2"></div>
+        </div>
+
+        <div class="flex justify-around mt-3 text-[10px] muted-text">
+          <span>Attempt 1</span><span>Attempt 2</span><span>Attempt 3</span>
+          <span>Attempt 4</span><span>Attempt 5</span><span>Attempt 6</span>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl p-5 sm:p-6">
+        <h3 class="primary-text font-bold text-lg">Your Progress</h3>
+        <p class="muted-text text-xs mt-1 mb-7">Based on completed quizzes</p>
+
+        <div class="flex justify-center mb-6">
+          <div id="progressRing"
+            class="w-36 h-36 rounded-full flex items-center justify-center"
+            style="background:conic-gradient(#8b5cf6 0%, #334155 0%)">
+
+            <div class="w-28 h-28 rounded-full bg-[#10172b] light:bg-white flex flex-col items-center justify-center">
+              <strong id="progressValue" class="text-3xl">0%</strong>
+              <span class="text-[10px] text-slate-400">Average</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <div class="flex justify-between text-xs mb-2">
+              <span class="muted-text">Completed quizzes</span>
+              <b id="progressCount">0</b>
+            </div>
+            <div class="progress-track">
+              <div id="quizProgress" class="progress-fill" style="width:0%"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-xs mb-2">
+              <span class="muted-text">Average score</span>
+              <b id="averageLabel">0%</b>
+            </div>
+            <div class="progress-track">
+              <div id="scoreProgress" class="progress-fill" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CATEGORIES -->
+    <section class="mb-7">
+      <div class="flex items-center justify-between mb-5">
+        <div>
+          <h3 class="primary-text text-lg font-bold">Explore Categories</h3>
+          <p class="muted-text text-xs mt-1">Choose a subject and test yourself</p>
+        </div>
+        <a href="categories.html" class="text-violet-400 text-xs font-semibold">View all →</a>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+
+        <a href="quiz.html?category=Programming" class="glass rounded-2xl p-5 hover:border-violet-400/50 transition group">
+          <div class="flex justify-between items-center mb-5">
+            <div class="w-12 h-12 rounded-2xl bg-violet-500/15 text-violet-400 flex items-center justify-center text-2xl">⌘</div>
+            <span class="text-slate-500 group-hover:text-violet-400">↗</span>
+          </div>
+          <h4 class="primary-text font-bold">Programming</h4>
+          <p class="muted-text text-xs mt-2">Explore coding and development.</p>
+        </a>
+
+        <a href="quiz.html?category=Technology" class="glass rounded-2xl p-5 hover:border-blue-400/50 transition group">
+          <div class="flex justify-between items-center mb-5">
+            <div class="w-12 h-12 rounded-2xl bg-blue-500/15 text-blue-400 flex items-center justify-center text-2xl">⚙</div>
+            <span class="text-slate-500 group-hover:text-blue-400">↗</span>
+          </div>
+          <h4 class="primary-text font-bold">Technology</h4>
+          <p class="muted-text text-xs mt-2">Discover digital innovation.</p>
+        </a>
+
+        <a href="quiz.html?category=General Knowledge" class="glass rounded-2xl p-5 hover:border-emerald-400/50 transition group">
+          <div class="flex justify-between items-center mb-5">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center text-2xl">◎</div>
+            <span class="text-slate-500 group-hover:text-emerald-400">↗</span>
+          </div>
+          <h4 class="primary-text font-bold">General Knowledge</h4>
+          <p class="muted-text text-xs mt-2">Expand your knowledge.</p>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- RECENT ACTIVITY -->
+    <section class="glass rounded-2xl p-5 sm:p-6">
+      <div class="flex items-center justify-between mb-5">
+        <div>
+          <h3 class="primary-text font-bold text-lg">Recent Quiz Activity</h3>
+          <p class="muted-text text-xs mt-1">Your latest attempts</p>
+        </div>
+        <a href="history.html" class="text-violet-400 text-xs font-semibold">View history →</a>
+      </div>
+
+      <div id="recentActivity" class="muted-text text-sm text-center py-8">
+        No quizzes completed yet. Start your first quiz!
+      </div>
+    </section>
+
+    <footer class="text-center muted-text text-xs mt-8 pb-3">
+      © 2026 QuizMaster · Smart Online Examination System
+    </footer>
+
+  </main>
+</div>
+
+<script>
+  // Theme
+  function applyTheme() {
+    const theme = localStorage.getItem('quizTheme') || 'dark';
+
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    document.body.classList.toggle('light', theme === 'light');
+
+    document.getElementById('themeIcon').textContent =
+      theme === 'dark' ? '☀' : '☾';
+  }
+
+  function toggleTheme() {
+    const current = localStorage.getItem('quizTheme') || 'dark';
+
+    localStorage.setItem(
+      'quizTheme',
+      current === 'dark' ? 'light' : 'dark'
+    );
+
+    applyTheme();
+  }
+
+  // Mobile menu
+  function openMenu() {
+    document.getElementById('sidebar').classList.remove('-translate-x-full');
+    document.getElementById('overlay').classList.remove('hidden');
+  }
+
+  function closeMenu() {
+    document.getElementById('sidebar').classList.add('-translate-x-full');
+    document.getElementById('overlay').classList.add('hidden');
+  }
+
+  // Dashboard data
+  function loadDashboard() {
+    const history = JSON.parse(
+      localStorage.getItem('quizHistory') || '[]'
+    );
+
+    const scores = history.map(item =>
+      Math.max(0, Math.min(100, Number(item.score) || 0))
+    );
+
+    const total = history.length;
+
+    const average = total
+      ? Math.round(scores.reduce((a,b) => a+b, 0) / total)
+      : 0;
+
+    const best = total ? Math.max(...scores) : 0;
+    const points = scores.reduce((a,b) => a+b, 0);
+
+    document.getElementById('totalQuizzes').textContent = total;
+    document.getElementById('averageScore').textContent = average + '%';
+    document.getElementById('bestScore').textContent = best + '%';
+    document.getElementById('totalPoints').textContent = points;
+
+    document.getElementById('progressValue').textContent = average + '%';
+    document.getElementById('progressCount').textContent = total;
+    document.getElementById('averageLabel').textContent = average + '%';
+
+    document.getElementById('quizProgress').style.width =
+      Math.min(total * 10, 100) + '%';
+
+    document.getElementById('scoreProgress').style.width =
+      average + '%';
+
+    document.getElementById('progressRing').style.background =
+      `conic-gradient(#8b5cf6 ${average}%, #334155 ${average}%)`;
+
+    // Chart
+    const chart = document.getElementById('chartBars');
+    const lastScores = scores.slice(-6);
+
+    chart.innerHTML = '';
+
+    for (let i = 0; i < 6; i++) {
+      const score = lastScores[i];
+      const bar = document.createElement('div');
+
+      bar.className = 'flex-1 flex flex-col justify-end items-center h-full gap-2';
+
+      if (score === undefined) {
+        bar.innerHTML =
+          '<div class="w-full max-w-8 rounded-t-lg bg-slate-500/10" style="height:4px"></div>';
+      } else {
+        bar.innerHTML = `
+          <span class="text-[10px] text-violet-400">${score}%</span>
+          <div class="w-full max-w-8 rounded-t-lg bg-gradient-to-t from-violet-700 to-blue-400"
+          style="height:${Math.max(score,3)}%"></div>
+        `;
+      }
+
+      chart.appendChild(bar);
+    }
+
+    // Recent activity
+    const recent = document.getElementById('recentActivity');
+
+    if (history.length === 0) {
+      recent.textContent =
+        'No quizzes completed yet. Start your first quiz!';
+    } else {
+      recent.innerHTML = '';
+
+      history.slice(-4).reverse().forEach(item => {
+        const row = document.createElement('div');
+
+        row.className =
+          'flex justify-between items-center gap-3 py-3 border-b border-slate-500/10 text-sm';
+
+        const title = document.createElement('span');
+        title.className = 'primary-text';
+        title.textContent = item.category || 'Quiz';
+
+        const result = document.createElement('strong');
+        result.className = 'text-violet-400';
+        result.textContent = (Number(item.score) || 0) + '%';
+
+        row.append(title, result);
+        recent.appendChild(row);
+      });
+    }
+
+    // User name
+    const user = JSON.parse(
+      localStorage.getItem('quizUser') || 'null'
+    );
+
+    if (user && user.name) {
+      document.getElementById('sidebarName').textContent = user.name;
+    }
+  }
+
+  applyTheme();
+  loadDashboard();
+</script>
+
+</body>
+</html>

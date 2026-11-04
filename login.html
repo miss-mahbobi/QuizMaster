@@ -1,0 +1,198 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuizMaster | Login</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+*{font-family:Inter,sans-serif}
+body{background:#080d1b;color:#f8fafc}
+.glass{background:rgba(20,29,52,.88);border:1px solid rgba(148,163,184,.13);backdrop-filter:blur(18px)}
+.gradient{background:linear-gradient(110deg,#6366f1,#8b5cf6,#a855f7)}
+.field{background:#0d1529;border:1px solid #27334e;color:#fff;outline:none}
+.field:focus{border-color:#8b5cf6;box-shadow:0 0 0 3px rgba(139,92,246,.13)}
+.light{background:#f1f5f9;color:#172033}
+.light .glass{background:white;border-color:#e2e8f0}
+.light .field{background:#f8fafc;color:#172033;border-color:#cbd5e1}
+.light .muted{color:#64748b}
+.light .text-slate-400{color:#64748b!important}
+</style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center px-4 py-8">
+
+<a href="index.html" class="fixed top-5 left-5 text-sm text-slate-400 hover:text-violet-400">
+← Back to Home
+</a>
+
+<button id="themeBtn" class="fixed top-5 right-5 glass rounded-xl px-4 py-2 text-sm">
+☀️ Light
+</button>
+
+<main class="w-full max-w-5xl grid md:grid-cols-2 gap-8 items-center">
+
+<section class="hidden md:block px-5">
+<div class="flex items-center gap-3 mb-10">
+<div class="w-12 h-12 rounded-2xl gradient flex items-center justify-center text-2xl font-bold">Q</div>
+<span class="text-2xl font-extrabold">QuizMaster</span>
+</div>
+
+<p class="text-violet-400 text-sm font-semibold tracking-widest">WELCOME BACK</p>
+
+<h1 class="text-5xl font-extrabold leading-tight mt-4">
+Your Journey.<br>
+<span class="text-violet-400">Your Success.</span>
+</h1>
+
+<p class="text-slate-400 muted leading-7 mt-5 max-w-md">
+Sign in to continue learning, practice your skills and track your progress.
+</p>
+
+<div class="grid grid-cols-2 gap-4 mt-10">
+<div class="glass p-5 rounded-2xl">
+<div class="text-2xl font-bold text-violet-400">Learn</div>
+<p class="text-xs text-slate-400 muted mt-2">Build your knowledge</p>
+</div>
+
+<div class="glass p-5 rounded-2xl">
+<div class="text-2xl font-bold text-blue-400">Grow</div>
+<p class="text-xs text-slate-400 muted mt-2">Improve every day</p>
+</div>
+</div>
+</section>
+
+<section class="glass rounded-3xl p-6 sm:p-9 shadow-2xl">
+
+<div class="md:hidden flex items-center gap-3 mb-7">
+<div class="w-10 h-10 rounded-xl gradient flex items-center justify-center font-bold text-xl">Q</div>
+<span class="text-xl font-extrabold">QuizMaster</span>
+</div>
+
+<div class="mb-8">
+<p class="text-violet-400 text-sm font-semibold">ACCOUNT LOGIN</p>
+<h2 class="text-3xl font-extrabold mt-2">Welcome Back</h2>
+<p class="text-slate-400 muted text-sm mt-2">
+Enter your account details to continue.
+</p>
+</div>
+
+<form id="loginForm" class="space-y-5">
+
+<div>
+<label class="block text-sm font-medium mb-2">Email Address</label>
+<input id="email" type="email" required autocomplete="email"
+placeholder="name@example.com"
+class="field w-full rounded-xl px-4 py-3 text-sm">
+</div>
+
+<div>
+<label class="block text-sm font-medium mb-2">Password</label>
+
+<div class="relative">
+<input id="password" type="password" required autocomplete="current-password"
+placeholder="Enter your password"
+class="field w-full rounded-xl px-4 py-3 pr-16 text-sm">
+
+<button id="showPassword" type="button"
+class="absolute right-3 top-3 text-xs text-violet-400">
+Show
+</button>
+</div>
+</div>
+
+<p id="message" class="hidden text-sm" role="status"></p>
+
+<button type="submit"
+class="gradient w-full rounded-xl py-3.5 font-bold hover:opacity-90">
+Sign In →
+</button>
+
+</form>
+
+<p class="text-center text-sm text-slate-400 muted mt-7">
+Don't have an account?
+<a href="register.html" class="text-violet-400 font-semibold hover:text-violet-300">
+Create Account
+</a>
+</p>
+
+</section>
+</main>
+
+<script>
+const themeBtn = document.getElementById('themeBtn');
+
+function applyTheme(){
+const theme = localStorage.getItem('quizTheme') || 'dark';
+document.body.classList.toggle('light',theme === 'light');
+themeBtn.textContent = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
+}
+
+themeBtn.addEventListener('click',()=>{
+const current = localStorage.getItem('quizTheme') || 'dark';
+localStorage.setItem('quizTheme',current === 'dark' ? 'light' : 'dark');
+applyTheme();
+});
+
+applyTheme();
+
+document.getElementById('showPassword').addEventListener('click',function(){
+const password = document.getElementById('password');
+const hidden = password.type === 'password';
+password.type = hidden ? 'text' : 'password';
+this.textContent = hidden ? 'Hide' : 'Show';
+});
+
+const form = document.getElementById('loginForm');
+const message = document.getElementById('message');
+
+function showMessage(text,success=false){
+message.textContent = text;
+message.classList.remove('hidden','text-red-400','text-green-400');
+message.classList.add(success ? 'text-green-400' : 'text-red-400');
+}
+
+form.addEventListener('submit',function(event){
+event.preventDefault();
+
+const email = document.getElementById('email').value.trim().toLowerCase();
+const password = document.getElementById('password').value;
+
+let users = [];
+
+try{
+users = JSON.parse(localStorage.getItem('quizUsers') || '[]');
+if(!Array.isArray(users)) users = [];
+}catch(error){
+users = [];
+}
+
+const user = users.find(item =>
+String(item.email || '').toLowerCase() === email &&
+item.password === password
+);
+
+if(!user){
+showMessage('Incorrect email or password. Please try again.');
+return;
+}
+
+const activeUser = {
+name:user.name || 'User',
+email:user.email,
+about:user.about || ''
+};
+
+localStorage.setItem('quizUser',JSON.stringify(activeUser));
+
+showMessage('Login successful!',true);
+window.location.href = 'index.html';
+});
+</script>
+
+</body>
+</html>
